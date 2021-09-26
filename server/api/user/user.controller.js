@@ -23,8 +23,8 @@ async function loginUser(req, res, next) {
       throw new CustomError(400, 'uniqueId required');
     }
     const [user, error] = await userService.loginUser({ uniqueId, asManager });
-    if (error === 'not a manager') {
-      return res.json({ error: 'not a manager' });
+    if (error.authError) {
+      return res.json({ error: error.authError });
     } else if (error) {
       throw new CustomError(400, error);
     }
