@@ -12,11 +12,13 @@ async function findUser({ uniqueId }) {
 async function loginUser({ uniqueId, asManager }) {
   try {
     const user = await User.findOne({ uniqueId });
-    if (!user.isManager && asManager) {
-      return [null, 'not a manager']
-    } else {
-      user.loggedAsManager = true;
-    }
+
+    if (user.isLogged) return [null, { authError: 'is already logged' }]
+
+    if (!user.isManager && asManager) return [null, { authError: 'not a manager' }]
+
+    if (user.isManager && asManager) user.loggedAsManager = true;
+
     user.isLogged = true;
     await user.save()
     return [user, null]
